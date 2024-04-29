@@ -1,6 +1,8 @@
 import pygame
 import random
 
+new_var = 5
+
 pygame.init()
 
 pygame.display.set_caption("Fire Escape")
