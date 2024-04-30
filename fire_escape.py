@@ -79,7 +79,7 @@ def raindrop_movement():
     global RAINDROPS, RAINDROP_VEL, RAIN_COUNTER, SCORE_TOTAL
     for raindrop in RAINDROPS:
         raindrop.y += RAINDROP_VEL
-        if raindrop.y > SCREEN_HEIGHT:
+        """if raindrop.y > SCREEN_HEIGHT:
             RAIN_COUNTER += 1
             SCORE_TOTAL += 1
             raindrop.x = random.randint(0, RAINDROP_CONTAINER_WIDTH)
@@ -92,7 +92,7 @@ def raindrop_movement():
             RAIN_COUNTER += 1
         if RAIN_COUNTER == 75:
             RAINDROP_VEL += 1
-            RAIN_COUNTER += 1
+            RAIN_COUNTER += 1"""
 
 
 def fire_movement():
@@ -145,7 +145,7 @@ def main():
             RAINDROP_WIDTH,
             RAINDROP_HEIGHT,
         )
-        for each in range(10)
+        for _ in range(10)
     ]
 
     run = True
