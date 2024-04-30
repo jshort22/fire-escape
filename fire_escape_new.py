@@ -1,17 +1,25 @@
 import pygame
 import random
 
-new_var = 5
 
 pygame.init()
 
 pygame.display.set_caption("Fire Escape")
 
 
-def update_screen(screen: pygame.Surface, red: tuple[int, int, int], fire: pygame.Rect):
+def update_screen(
+    screen: pygame.Surface,
+    red: tuple[int, int, int],
+    blue: tuple[int, int, int],
+    fire: pygame.Rect,
+    rain: pygame.Rect,
+    screen_container: pygame.Rect,
+):
     white = (255, 255, 255)
     screen.fill(white)
     pygame.draw.rect(screen, red, fire)
+    pygame.draw.rect(screen, blue, rain)
+    pygame.draw.rect(screen, white, screen_container)
     pygame.display.update()
 
 
@@ -29,7 +37,24 @@ def fire_movement(
         fire.y += fire_vel
 
 
-# def raindrop_movement():
+def rain_movement(
+    rain: pygame.Rect,
+    screen_height: int,
+):
+    rain_vel = 5
+
+    if rain.y < screen_height:
+        rain.y += rain_vel
+
+
+def check_collision(
+    rain: pygame.Rect,
+    fire: pygame.Rect,
+):
+    rain_vel = 5
+
+    if rain.colliderect(fire):
+        print("GAME OVER")
 
 
 def main():
@@ -37,6 +62,7 @@ def main():
 
     # COLORS
     red = (255, 0, 0)
+    blue = (0, 0, 255)
 
     # SCREEN
     screen_width = 500
@@ -57,16 +83,14 @@ def main():
     # RAIN
     rain_width = 10
     rain_height = 10
-    rain = [
-        pygame.Rect(
-            random.randint(0, 601) - rain_width,
-            random.randint(0, 51) - rain_height,
-            rain_width,
-            rain_height,
-        )
-        for _ in range(10)
-    ]
-    rain_vel = 10
+    rain = pygame.Rect(
+        random.randint(0, 501) - rain_width,
+        random.randint(0, 101) - rain_height,
+        rain_width,
+        rain_height,
+    )
+
+    rain_container = pygame.Rect(0, 0, screen_width, 100)
 
     run = True
     while run:
@@ -75,8 +99,10 @@ def main():
             if event.type == pygame.QUIT:
                 run = False
 
-        update_screen(screen, red, fire)
+        update_screen(screen, red, blue, fire, rain, rain_container)
         fire_movement(fire, fire_vel, screen_width, screen_height)
+        rain_movement(rain, screen_height)
+        check_collision(rain, fire)
 
     pygame.quit()
 
