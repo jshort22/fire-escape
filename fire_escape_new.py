@@ -13,6 +13,7 @@ def update_screen(
     blue: tuple[int, int, int],
     fire: pygame.Rect,
     rain: pygame.Rect,
+    rain_counter: list[int],
 ):
     white = (255, 255, 255)
     screen.fill(white)
@@ -37,24 +38,20 @@ def fire_movement(
 
 def rain_movement(
     rain: pygame.Rect,
-    rain_vel: int,
+    rain_vel: list[int],
     screen_width: int,
     screen_height: int,
+    rain_counter: list[int],
 ):
-
-    rain.y += rain_vel
+    rain.y += rain_vel[0]
     if rain.y > screen_height:
         rain.x = random.randint(0, screen_width - rain.width)
         rain.y = -rain.height
-
-
-"""def check_collision(
-    rain: pygame.Rect,
-    fire: pygame.Rect,
-    rain_vel: int,
-):
-    if rain.colliderect(fire):
-        rain.y -= rain_vel"""
+        rain_counter[0] += 1
+        print(rain_counter)
+    if rain_counter[0] % 10 == 0 and rain_counter[0] != 0:
+        rain_vel[0] += 1
+        rain_counter[0] += 1
 
 
 def main():
@@ -83,7 +80,9 @@ def main():
     # RAIN
     rain_width = 10
     rain_height = 10
-    rain_vel = 5
+    rain_vel = [3]
+    rain_counter = [0]
+
     rain = pygame.Rect(
         random.randint(0, random.randint(0, 500)),
         random.randint(0, random.randint(0, 50)),
@@ -98,15 +97,14 @@ def main():
             if event.type == pygame.QUIT:
                 run = False
 
-        update_screen(screen, red, blue, fire, rain)
+        if rain.colliderect(fire):
+            run = False
+            print("GAME OVER")
+            pygame.time.delay(5000)
+
+        update_screen(screen, red, blue, fire, rain, rain_counter)
         fire_movement(fire, fire_vel, screen_width, screen_height)
-        rain_movement(
-            rain,
-            rain_vel,
-            screen_width,
-            screen_height,
-        )
-        # check_collision(rain, fire, rain_vel)
+        rain_movement(rain, rain_vel, screen_width, screen_height, rain_counter)
 
     pygame.quit()
 
