@@ -6,6 +6,8 @@ pygame.init()
 
 pygame.display.set_caption("Fire Escape")
 
+new_var = 5
+
 
 def update_screen(
     screen: pygame.Surface,
