@@ -11,12 +11,19 @@ def update_screen(
     screen: pygame.Surface,
     red: tuple[int, int, int],
     blue: tuple[int, int, int],
+    black: tuple[int, int, int],
     fire: pygame.Rect,
     rain_drops: list[pygame.Rect],
+    timer: int,
     rain_counter: list[int],
 ):
+    message_font = pygame.font.SysFont("Roboto", 20)
     white = (255, 255, 255)
     screen.fill(white)
+    score = message_font.render("Score " + str(rain_counter), 1, black)
+    screen.blit(score, (20, 40))
+    level = message_font.render("Level " + str(len(rain_drops)), 1, black)
+    screen.blit(level, (20, 20))
     pygame.draw.rect(screen, red, fire)
     for rain in rain_drops:
         pygame.draw.rect(screen, blue, rain)
@@ -50,8 +57,7 @@ def rain_movement(
             rain.x = random.randint(0, screen_width - rain.width)
             rain.y = -rain.height
             rain_counter[0] += 1
-        print(rain_counter)
-        if rain_counter[0] % 10 == 0 and rain_counter[0] != 0:
+        if rain_counter[0] % 10 == 0 and rain_counter[0] != 0 and rain_vel[0] <= 5:
             rain_vel[0] += 1
             rain_counter[0] += 1
 
@@ -62,6 +68,7 @@ def main():
     # COLORS
     red = (255, 0, 0)
     blue = (0, 0, 255)
+    black = (0, 0, 0)
 
     # SCREEN
     screen_width = 500
@@ -116,8 +123,9 @@ def main():
                 rain_height,
             )
             rain_drops.append(new_rain_drop)
+            print(len(rain_drops))
 
-        update_screen(screen, red, blue, fire, rain_drops, rain_counter)
+        update_screen(screen, red, blue, black, fire, rain_drops, timer, rain_counter)
         fire_movement(fire, fire_vel, screen_width, screen_height)
         rain_movement(rain_drops, rain_vel, screen_width, screen_height, rain_counter)
 
