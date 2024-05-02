@@ -93,6 +93,7 @@ def main():
     rain_counter = [0]
 
     timer = 0
+    message_font = pygame.font.SysFont("Roboto", 20)
 
     rain_drops = [
         pygame.Rect(
@@ -112,9 +113,17 @@ def main():
                 run = False
         for rain in rain_drops:
             if rain.colliderect(fire):
-                run = False
-                print("GAME OVER")
+                game_over_message = message_font.render("GAME OVER", 1, black)
+                screen.blit(
+                    game_over_message,
+                    (
+                        screen_width // 2 - game_over_message.get_width() // 2,
+                        screen_height // 2,
+                    ),
+                )
+                pygame.display.update()
                 pygame.time.delay(5000)
+                run = False
         if timer % 1000 == 0:
             new_rain_drop = pygame.Rect(
                 random.randint(0, random.randint(0, screen_width - rain_width)),
