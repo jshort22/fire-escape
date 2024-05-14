@@ -2,163 +2,166 @@ import pygame
 import random
 import os
 
+
 pygame.init()
-pygame.font.init()
 
-# Screen Dimenstions
-SCREEN_WIDTH, SCREEN_HEIGHT = 500, 700
-SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Fire Escape")
-FPS = 60
-
-# Colors
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-GRAY = (200, 200, 200)
-BLUE = (0, 0, 255)
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-PURPLE = (32, 10, 70)
-
-# Fire Dimensions
-FIRE_WIDTH, FIRE_HEIGHT = 35, 70
-FIRE = pygame.Rect(
-    SCREEN_WIDTH // 2 - FIRE_WIDTH // 2,
-    SCREEN_HEIGHT - FIRE_HEIGHT,
-    FIRE_WIDTH,
-    FIRE_HEIGHT,
-)
-FIRE_VEL = 5
-
-# Fire cartoon
-FIRE_CARTOON_IMAGE = pygame.image.load(os.path.join("media", "fire_cartoon.png"))
-FIRE_CARTOON = pygame.transform.scale(FIRE_CARTOON_IMAGE, (FIRE_WIDTH, FIRE_HEIGHT))
-
-# Score
-SCORE_TOTAL = 0
-SCORE_FONT = pygame.font.SysFont("Roboto", 30)
-
-# Game Over Message
-MESSAGE_FONT = pygame.font.SysFont("arial", 50)
-GAME_OVER_MESSAGE = MESSAGE_FONT.render("GAME OVER", 1, BLACK)
-GAME_OVER_DIMENSIONS = (
-    (SCREEN_WIDTH - GAME_OVER_MESSAGE.get_width()) // 2,
-    (SCREEN_HEIGHT - GAME_OVER_MESSAGE.get_height()) // 2,
-)
-
-# Raindrop Dimensions
-RAINDROP_WIDTH = 10
-RAINDROP_HEIGHT = 10
-RAINDROPS = [
-    pygame.Rect(
-        random.randint(0, 601) - RAINDROP_WIDTH,
-        random.randint(0, 51) - RAINDROP_HEIGHT,
-        RAINDROP_WIDTH,
-        RAINDROP_HEIGHT,
-    )
-    for _ in range(10)
-]
-RAINDROP_VEL = 2
-RAIN_COUNTER = 0
-
-# Rain cartoon
-RAIN_CARTOON_IMAGE = pygame.image.load(os.path.join("media", "rain_cartoon.png"))
-RAIN_CARTOON = pygame.transform.scale(
-    RAIN_CARTOON_IMAGE, (RAINDROP_WIDTH, RAINDROP_HEIGHT)
-)
 
 
-# Raindrop Container
-RAINDROP_CONTAINER_WIDTH, RAINDROP_CONTAINER_HEIGHT = SCREEN_WIDTH, 50
-RAINDROP_CONTAINER = pygame.Rect(
-    0, 0, RAINDROP_CONTAINER_WIDTH, RAINDROP_CONTAINER_HEIGHT
-)
+def update_screen(
+    screen: pygame.Surface,
+    red: tuple[int, int, int],
+    blue: tuple[int, int, int],
+    black: tuple[int, int, int],
+    fire: pygame.Rect,
+    rain_drops: list[pygame.Rect],
+    timer: int,
+    rain_counter: list[int],
+    fire_width: int,
+    fire_height: int,
+    rain_width: int,
+    rain_height: int,
+):
+    fire_cartoon_image = pygame.image.load(os.path.join("media", "fire_cartoon.png"))
+    rain_cartoon_image = pygame.image.load(os.path.join("media", "rain_cartoon.png"))
 
+    fire_cartoon = pygame.transform.scale(fire_cartoon_image, (fire_width, fire_height))
+    rain_cartoon = pygame.transform.scale(rain_cartoon_image, (rain_width, rain_height))
 
-def raindrop_movement():
-    global RAINDROPS, RAINDROP_VEL, RAIN_COUNTER, SCORE_TOTAL
-    for raindrop in RAINDROPS:
-        raindrop.y += RAINDROP_VEL
-        """if raindrop.y > SCREEN_HEIGHT:
-            RAIN_COUNTER += 1
-            SCORE_TOTAL += 1
-            raindrop.x = random.randint(0, RAINDROP_CONTAINER_WIDTH)
-            raindrop.y = random.randint(0, RAINDROP_CONTAINER_HEIGHT)
-        if RAIN_COUNTER == 25:
-            RAINDROP_VEL += 1
-            RAIN_COUNTER += 1
-        if RAIN_COUNTER == 50:
-            RAINDROP_VEL += 1
-            RAIN_COUNTER += 1
-        if RAIN_COUNTER == 75:
-            RAINDROP_VEL += 1
-            RAIN_COUNTER += 1"""
-
-
-def fire_movement():
-    keys_pressed = pygame.key.get_pressed()
-    if keys_pressed[pygame.K_LEFT] and FIRE.left > 0:  # LEFT
-        FIRE.x -= FIRE_VEL
-    if keys_pressed[pygame.K_RIGHT] and FIRE.right < SCREEN_WIDTH:  # RIGHT
-        FIRE.x += FIRE_VEL
-    if keys_pressed[pygame.K_UP] and FIRE.top > 0:  # UP
-        FIRE.y -= FIRE_VEL
-    if keys_pressed[pygame.K_DOWN] and FIRE.bottom < SCREEN_HEIGHT:  # DOWN
-        FIRE.y += FIRE_VEL
-
-
-def check_collision(raindrops: list[pygame.Rect]):
-    global FIRE, run
-    for raindrop in raindrops:
-        if raindrop.colliderect(FIRE):
-            SCREEN.blit(GAME_OVER_MESSAGE, GAME_OVER_DIMENSIONS)
-            pygame.display.update()
-            pygame.time.delay(3000)
-            run = False
-
-
-def update_screen(raindrops: list[pygame.Rect]):
-    global RAINDROPS, raindrop
-    SCREEN.fill(WHITE)
-    SCREEN.blit(FIRE_CARTOON, (FIRE.x, FIRE.y))
-
-    pygame.draw.rect(SCREEN, WHITE, RAINDROP_CONTAINER)
-
-    SCORE = SCORE_FONT.render("Score: " + str(SCORE_TOTAL), 1, BLACK)
-    SCREEN.blit(SCORE, (20, 20))
-
-    for raindrop in RAINDROPS:
-        pygame.draw.rect(SCREEN, BLUE, raindrop)
-        SCREEN.blit(RAIN_CARTOON, (raindrop.x, raindrop.y))
-
+    message_font = pygame.font.SysFont("Roboto", 20)
+    white = (255, 255, 255)
+    screen.fill(white)
+    score = message_font.render("Score " + str(rain_counter), 1, black)
+    screen.blit(score, (20, 40))
+    level = message_font.render("Level " + str(len(rain_drops)), 1, black)
+    screen.blit(level, (20, 20))
+    screen.blit(fire_cartoon, (fire.x, fire.y))
+    # pygame.draw.rect(screen, red, fire)
+    for rain in rain_drops:
+        screen.blit(rain_cartoon, (rain.x, rain.y))
     pygame.display.update()
 
 
+def fire_movement(
+    fire: pygame.Rect, fire_vel: int, screen_width: int, screen_height: int
+):
+    keys_pressed = pygame.key.get_pressed()
+    if keys_pressed[pygame.K_LEFT] and fire.left > 0:  # LEFT
+        fire.x -= fire_vel
+    if keys_pressed[pygame.K_RIGHT] and fire.right < screen_width:  # RIGHT
+        fire.x += fire_vel
+    if keys_pressed[pygame.K_UP] and fire.top > 0:  # UP
+        fire.y -= fire_vel
+    if keys_pressed[pygame.K_DOWN] and fire.bottom < screen_height:  # DOWN
+        fire.y += fire_vel
+
+
+def rain_movement(
+    rain_drops: list[pygame.Rect],
+    rain_vel: list[int],
+    screen_width: int,
+    screen_height: int,
+    rain_counter: list[int],
+):
+    for rain in rain_drops:
+        rain.y += rain_vel[0]
+        if rain.y > screen_height:
+            rain.x = random.randint(0, screen_width - rain.width)
+            rain.y = -rain.height
+            rain_counter[0] += 1
+        if rain_counter[0] % 10 == 0 and rain_counter[0] != 0 and rain_vel[0] <= 5:
+            rain_vel[0] += 1
+            rain_counter[0] += 1
+
+
 def main():
-    global SCORE_TOTAL
     clock = pygame.time.Clock()
 
-    raindrops = [
-        pygame.Rect(
-            random.randint(0, 601) - RAINDROP_WIDTH,
-            random.randint(0, 51) - RAINDROP_HEIGHT,
-            RAINDROP_WIDTH,
-            RAINDROP_HEIGHT,
-        )
-        for _ in range(10)
-    ]
+    # COLORS
+    red = (255, 0, 0)
+    blue = (0, 0, 255)
+    black = (0, 0, 0)
 
+    # SCREEN
+    screen_width = 500
+    screen_height = 700
+    screen = pygame.display.set_mode((screen_width, screen_height))
+
+    # FIRE
+    fire_width = 30
+    fire_height = 70
+    fire_vel = 5
+    fire = pygame.Rect(
+        screen_width // 2 - fire_width // 2,
+        screen_height - fire_height,
+        fire_width,
+        fire_height,
+    )
+
+    # RAIN
+    rain_width = 10
+    rain_height = 10
+    rain_vel = [2]
+    rain_counter = [0]
+
+    timer = 0
+    message_font = pygame.font.SysFont("Roboto", 20)
+
+    rain_drops = [
+        pygame.Rect(
+            random.randint(0, random.randint(0, screen_width - rain_width)),
+            -rain_height,
+            rain_width,
+            rain_height,
+        )
+        for _ in range(1)
+    ]
     run = True
     while run:
-        clock.tick(FPS)
+        timer += 1
+        clock.tick(60)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
+        for rain in rain_drops:
+            if rain.colliderect(fire):
+                game_over_message = message_font.render("GAME OVER", 1, black)
+                screen.blit(
+                    game_over_message,
+                    (
+                        screen_width // 2 - game_over_message.get_width() // 2,
+                        screen_height // 2,
+                    ),
+                )
+                pygame.display.update()
+                pygame.time.delay(5000)
+                run = False
+        if timer % 1000 == 0:
+            new_rain_drop = pygame.Rect(
+                random.randint(0, random.randint(0, screen_width - rain_width)),
+                -rain_height,
+                rain_width,
+                rain_height,
+            )
+            rain_drops.append(new_rain_drop)
+            print(len(rain_drops))
 
-        raindrop_movement()
-        fire_movement()
-        check_collision(raindrops)
-        update_screen(raindrops)
+        update_screen(
+            screen,
+            red,
+            blue,
+            black,
+            fire,
+            rain_drops,
+            timer,
+            rain_counter,
+            fire_width,
+            fire_height,
+            rain_width,
+            rain_height,
+        )
+        fire_movement(fire, fire_vel, screen_width, screen_height)
+        rain_movement(rain_drops, rain_vel, screen_width, screen_height, rain_counter)
 
     pygame.quit()
 
