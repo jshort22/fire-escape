@@ -1,3 +1,3 @@
-# fire-escape
+# fire-escape-game
 
-Help Pyro dodge the raindrops.
+Help Pyro dodge the raindrops!
